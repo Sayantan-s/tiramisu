@@ -1,7 +1,11 @@
 import { View } from 'react-native';
 import { useTheme } from '../theme';
 import { Text } from './Text';
-import type { Member } from '../lib/split/types';
+type AvatarMember = {
+  id: string;
+  name: string;
+  avatar?: string | null;
+};
 
 const PALETTE = ['#E5A26A', '#7CC9A6', '#F58E84', '#A5C8E5', '#D2B48C', '#C19EE0'];
 
@@ -14,7 +18,7 @@ const colorFor = (id: string): string => {
 };
 
 export type AvatarProps = {
-  member: Pick<Member, 'id' | 'name' | 'avatar'>;
+  member: AvatarMember;
   size?: number;
   ring?: boolean;
 };

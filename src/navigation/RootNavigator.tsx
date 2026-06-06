@@ -1,19 +1,18 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useHouseholdStore } from '../features/household/store';
+import { useAuthStore } from '../features/auth/store';
+import { useGroupsStore } from '../features/groups/store';
 import { useTheme } from '../theme';
-import { OnboardingScreen } from '../screens/OnboardingScreen';
-import { MainTabs } from './MainTabs';
-import { AddExpenseScreen } from '../screens/AddExpenseScreen';
-import { ExpenseDetailScreen } from '../screens/ExpenseDetailScreen';
-import { ConfirmCaptureScreen } from '../screens/ConfirmCaptureScreen';
-import { ProfileSwitcherScreen } from '../screens/ProfileSwitcherScreen';
+import { AuthStack } from './AuthStack';
+import { ModeStack } from './ModeStack';
+import { GroupStack } from './GroupStack';
 import type { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export function RootNavigator() {
-  const initialized = useHouseholdStore((s) => s.initialized);
   const theme = useTheme();
+  const token = useAuthStore((s) => s.token);
+  const activeGroupId = useGroupsStore((s) => s.activeGroupId);
 
   return (
     <Stack.Navigator
@@ -21,32 +20,12 @@ export function RootNavigator() {
         headerShown: false,
         contentStyle: { backgroundColor: theme.colors.bg },
       }}>
-      {!initialized ? (
-        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+      {!token ? (
+        <Stack.Screen name="Auth" component={AuthStack} />
+      ) : !activeGroupId ? (
+        <Stack.Screen name="Mode" component={ModeStack} />
       ) : (
-        <>
-          <Stack.Screen name="Main" component={MainTabs} />
-          <Stack.Screen
-            name="AddExpense"
-            component={AddExpenseScreen}
-            options={{ presentation: 'modal' }}
-          />
-          <Stack.Screen
-            name="ExpenseDetail"
-            component={ExpenseDetailScreen}
-            options={{ presentation: 'modal' }}
-          />
-          <Stack.Screen
-            name="ConfirmCapture"
-            component={ConfirmCaptureScreen}
-            options={{ presentation: 'modal' }}
-          />
-          <Stack.Screen
-            name="ProfileSwitcher"
-            component={ProfileSwitcherScreen}
-            options={{ presentation: 'modal' }}
-          />
-        </>
+        <Stack.Screen name="Group" component={GroupStack} />
       )}
     </Stack.Navigator>
   );

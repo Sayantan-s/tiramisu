@@ -1,28 +1,25 @@
 import type { NavigatorScreenParams } from '@react-navigation/native';
-import type { PaymentHint } from '../lib/sms/types';
 
-export type ExpensePrefill = {
-  amount?: number;
-  description?: string;
-  category?: string;
-  payerId?: string;
-  receiptUri?: string;
-  source?: 'manual' | 'receipt' | 'sms';
-  fromHint?: PaymentHint;
+export type AuthStackParamList = {
+  Welcome: undefined;
+  Phone: undefined;
+  Otp: undefined;
+};
+
+export type ModeStackParamList = {
+  ModeHub: undefined;
+  GroupsList: undefined;
+  CreateGroup: undefined;
+  JoinGroup: { prefill?: string } | undefined;
+};
+
+export type GroupStackParamList = {
+  Landing: undefined;
+  InvitePeople: undefined;
 };
 
 export type RootStackParamList = {
-  Onboarding: undefined;
-  Main: NavigatorScreenParams<MainTabParamList>;
-  AddExpense: { prefill?: ExpensePrefill } | undefined;
-  ExpenseDetail: { expenseId: string };
-  ConfirmCapture: { imageUri: string };
-  ProfileSwitcher: undefined;
-};
-
-export type MainTabParamList = {
-  Home: undefined;
-  Expenses: undefined;
-  Scan: undefined;
-  Settle: undefined;
+  Auth: NavigatorScreenParams<AuthStackParamList>;
+  Mode: NavigatorScreenParams<ModeStackParamList>;
+  Group: NavigatorScreenParams<GroupStackParamList>;
 };
