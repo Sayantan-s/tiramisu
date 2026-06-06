@@ -15,6 +15,8 @@ import { useAuthStore } from './src/features/auth/store';
 import { useInvitesStore } from './src/features/invites/store';
 import { useGroupsStore } from './src/features/groups/store';
 import { installDeepLinkHandler } from './src/lib/deeplinks';
+import { DEV_MODE } from './src/config/dev';
+import { DevPanel } from './src/dev/DevPanel';
 import type { RootStackParamList } from './src/navigation/types';
 
 if (__DEV__) {
@@ -55,6 +57,7 @@ function App() {
           <NavigationContainer ref={navigationRef}>
             <RootNavigator />
           </NavigationContainer>
+          {DEV_MODE ? <DevPanel /> : null}
         </ThemeProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

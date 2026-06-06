@@ -13,9 +13,22 @@ export type ModeStackParamList = {
   JoinGroup: { prefill?: string } | undefined;
 };
 
+export type ExpensePrefill = {
+  amount?: number;
+  description?: string;
+  category?: string;
+  payer_id?: string;
+  receipt_uri?: string;
+  source?: 'manual' | 'receipt' | 'sms';
+};
+
 export type GroupStackParamList = {
-  Landing: undefined;
+  Tabs: undefined;
   InvitePeople: undefined;
+  AddExpense: { prefill?: ExpensePrefill } | undefined;
+  ExpenseDetail: { expenseId: string };
+  ConfirmCapture: { imageUri: string };
+  Members: undefined;
 };
 
 export type RootStackParamList = {
