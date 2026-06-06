@@ -11,6 +11,10 @@ import { StatusBar, useColorScheme } from 'react-native';
 import { ThemeProvider } from './src/theme';
 import { RootNavigator } from './src/navigation/RootNavigator';
 
+if (__DEV__) {
+  require("./ReactotronConfig");
+}
+
 function App() {
   const scheme = useColorScheme();
   return (

@@ -5006,6 +5006,11 @@ minimatch@^3.0.4, minimatch@^3.0.5, minimatch@^3.1.1, minimatch@^3.1.2:
   dependencies:
     brace-expansion "^1.1.7"
 
+mitt@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/mitt/-/mitt-3.0.1.tgz#ea36cf0cc30403601ae074c8f77b7092cdab36d1"
+  integrity sha512-vKivATfr97l2/QBCYAkXYDbrIWPM2IIKEl7YPhjCvKlG3kE2gm+uBo6nEXK3M5/Ffh/FLpKExzOQ3JJoJGFKBw==
+
 mkdirp@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-1.0.4.tgz#3eb5ed62622756d79a5f0e2a221dfebad75c2f7e"
@@ -5569,6 +5574,27 @@ react@19.2.3:
   version "19.2.3"
   resolved "https://registry.yarnpkg.com/react/-/react-19.2.3.tgz#d83e5e8e7a258cf6b4fe28640515f99b87cd19b8"
   integrity sha512-Ku/hhYbVjOQnXDZFv2+RibmLFGwFdeeKHFcOTlrt7xplBnya5OGn/hIRDsqDiSUcfORsDC7MPxwork8jBwsIWA==
+
+reactotron-core-client@2.10.0:
+  version "2.10.0"
+  resolved "https://registry.yarnpkg.com/reactotron-core-client/-/reactotron-core-client-2.10.0.tgz#494e6e56bb018774a0a63c797d48b53ac6986256"
+  integrity sha512-mOzkc1Rb4sN98OLY/frkP0e1A60bTFjuXUgG8D4m+pwCcjVCWZupdSFV8c5+gqcZBnreoVR20/ko6D8X/7KPvg==
+  dependencies:
+    reactotron-core-contract "0.4.0"
+
+reactotron-core-contract@0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/reactotron-core-contract/-/reactotron-core-contract-0.4.0.tgz#7227fe19be6b564c083318798bdf88af943ca995"
+  integrity sha512-o7m4mSzaUM/IGDc1dBfe0q6rgSi7mZCP7FCs3kHF7AJQwXBOKx/awjVaeNVqz+w6ADiw7X4dtDdQvEROAXdD3w==
+
+reactotron-react-native@^5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/reactotron-react-native/-/reactotron-react-native-5.2.0.tgz#e722f92860951b383d17400115825aa3a3b10502"
+  integrity sha512-7Jd47Eti4wvyn1p5MsQ4mEg2mGG8B5HIZHASjK5RKVfOajEP9Sf4Vume9URG6inB/UQWGpBP6ahCGqcSo4qn3w==
+  dependencies:
+    mitt "^3.0.1"
+    reactotron-core-client "2.10.0"
+    reactotron-core-contract "0.4.0"
 
 readable-stream@^3.4.0:
   version "3.6.2"
