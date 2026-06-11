@@ -1,20 +1,23 @@
 import { useMemo, useState } from 'react';
-import { FlatList, Pressable, RefreshControl, ScrollView, View } from 'react-native';
+import { FlatList, Pressable, RefreshControl, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Avatar, Button, Card, Screen, Stack, Text } from '../components';
+import {
+  Avatar,
+  Button,
+  Card,
+  MonthSelector,
+  Screen,
+  Stack,
+  Text,
+} from '../components';
 import { useGroupsStore } from '../features/groups/store';
 import { useExpensesStore } from '../features/expenses/store';
 import { useEventsStore } from '../features/events/store';
 import { useSettlementsStore } from '../features/settlements/store';
 import { useAuthStore } from '../features/auth/store';
 import { useSyncController } from '../lib/sync/controller';
-import {
-  currentMonthKey,
-  formatINR,
-  formatMonth,
-  formatShortDate,
-} from '../lib/format';
+import { currentMonthKey, formatINR, formatShortDate } from '../lib/format';
 import { useTheme } from '../theme';
 import type { EventDto, ExpenseDto, SettlementDto } from '../lib/api';
 import type { GroupStackParamList } from '../navigation/types';
@@ -34,35 +37,35 @@ export function MonthRoomScreen() {
   const nav = useNavigation<Nav>();
   const theme = useTheme();
   const { groups, activeGroupId } = useGroupsStore();
-  const group = groups.find((g) => g.id === activeGroupId);
-  const me = useAuthStore((s) => s.user);
+  const group = groups.find(g => g.id === activeGroupId);
+  const me = useAuthStore(s => s.user);
 
   const [month, setMonth] = useState<string>(currentMonthKey());
 
   useSyncController({ groupId: activeGroupId, month });
 
-  const expenses = useExpensesStore((s) => s.expenses);
-  const settlements = useSettlementsStore((s) => s.settlements);
-  const events = useEventsStore((s) => s.events);
-  const refreshExpenses = useExpensesStore((s) => s.refresh);
-  const refreshSettlements = useSettlementsStore((s) => s.refresh);
-  const refreshEvents = useEventsStore((s) => s.refresh);
-  const loading = useEventsStore((s) => s.loading);
+  const expenses = useExpensesStore(s => s.expenses);
+  const settlements = useSettlementsStore(s => s.settlements);
+  const events = useEventsStore(s => s.events);
+  const refreshExpenses = useExpensesStore(s => s.refresh);
+  const refreshSettlements = useSettlementsStore(s => s.refresh);
+  const refreshEvents = useEventsStore(s => s.refresh);
+  const loading = useEventsStore(s => s.loading);
 
   const expensesById = useMemo(
-    () => new Map<string, ExpenseDto>(expenses.map((e) => [e.id, e])),
+    () => new Map<string, ExpenseDto>(expenses.map(e => [e.id, e])),
     [expenses],
   );
   const settlementsById = useMemo(
-    () => new Map<string, SettlementDto>(settlements.map((s) => [s.id, s])),
+    () => new Map<string, SettlementDto>(settlements.map(s => [s.id, s])),
     [settlements],
   );
 
-  const months = useMemo(() => {
-    const set = new Set<string>([currentMonthKey(), month]);
-    for (const e of expenses) set.add(e.paid_at.slice(0, 7));
-    for (const s of settlements) set.add(s.paid_at.slice(0, 7));
-    return Array.from(set).sort().reverse();
+  const years = useMemo(() => {
+    const set = new Set<number>([new Date().getFullYear(), Number(month.slice(0, 4))]);
+    for (const e of expenses) set.add(Number(e.paid_at.slice(0, 4)));
+    for (const s of settlements) set.add(Number(s.paid_at.slice(0, 4)));
+    return Array.from(set).sort((a, b) => b - a);
   }, [expenses, settlements, month]);
 
   const visible = useMemo(
@@ -84,8 +87,9 @@ export function MonthRoomScreen() {
     );
   }
 
-  const memberName = (id: string) => group.members.find((m) => m.id === id)?.name ?? '?';
-  const memberFor = (id: string) => group.members.find((m) => m.id === id);
+  const memberName = (id: string) =>
+    group.members.find(m => m.id === id)?.name ?? '?';
+  const memberFor = (id: string) => group.members.find(m => m.id === id);
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.bg }}>
@@ -95,37 +99,11 @@ export function MonthRoomScreen() {
         onProfile={() => useAuthStore.getState().signOut()}
       />
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{
-          gap: theme.spacing(2),
-          paddingHorizontal: theme.spacing(5),
-          paddingVertical: theme.spacing(2),
-        }}>
-        {months.map((m) => {
-          const active = m === month;
-          return (
-            <Pressable
-              key={m}
-              onPress={() => setMonth(m)}
-              style={{
-                paddingVertical: theme.spacing(2),
-                paddingHorizontal: theme.spacing(3),
-                borderRadius: theme.radii.pill,
-                backgroundColor: active ? theme.colors.accent : theme.colors.bgMuted,
-              }}>
-              <Text variant="caption" weight="700" tone={active ? 'inverse' : 'default'}>
-                {formatMonth(`${m}-01T00:00:00.000Z`)}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </ScrollView>
+      <MonthSelector value={month} onChange={setMonth} availableYears={years} />
 
       <FlatList
         data={visible}
-        keyExtractor={(e) => e.id}
+        keyExtractor={e => e.id}
         contentContainerStyle={{
           paddingHorizontal: theme.spacing(5),
           paddingTop: theme.spacing(3),
@@ -152,12 +130,18 @@ export function MonthRoomScreen() {
         renderItem={({ item }) => (
           <EventCell
             event={item}
-            expense={item.subject_id ? expensesById.get(item.subject_id) : undefined}
-            settlement={item.subject_id ? settlementsById.get(item.subject_id) : undefined}
+            expense={
+              item.subject_id ? expensesById.get(item.subject_id) : undefined
+            }
+            settlement={
+              item.subject_id ? settlementsById.get(item.subject_id) : undefined
+            }
             mine={item.actor_id === me?.id}
             actorName={memberName(item.actor_id)}
             actor={memberFor(item.actor_id)}
-            onPressExpense={(eid) => nav.navigate('ExpenseDetail', { expenseId: eid })}
+            onPressExpense={eid =>
+              nav.navigate('ExpenseDetail', { expenseId: eid })
+            }
           />
         )}
       />
@@ -170,7 +154,8 @@ export function MonthRoomScreen() {
           paddingHorizontal: theme.spacing(5),
           paddingTop: theme.spacing(3),
           paddingBottom: theme.spacing(4),
-        }}>
+        }}
+      >
         <Button
           title="+ Add expense"
           fullWidth
@@ -203,7 +188,11 @@ export function MonthRoomScreen() {
       return (
         <Pressable onPress={() => onPressExpense(expense.id)}>
           <Stack direction="row" gap={2} align="flex-start">
-            {actor ? <Avatar member={actor} size={32} /> : <View style={{ width: 32 }} />}
+            {actor ? (
+              <Avatar member={actor} size={32} />
+            ) : (
+              <View style={{ width: 32 }} />
+            )}
             <Card padding={4} style={{ flex: 1 }}>
               <Stack gap={2}>
                 <Stack direction="row" justify="space-between" align="center">
@@ -214,7 +203,8 @@ export function MonthRoomScreen() {
                 <Stack direction="row" justify="space-between" align="center">
                   <Stack gap={1} style={{ flex: 1 }}>
                     <Text variant="heading">
-                      {CATEGORY_EMOJI[expense.category] ?? ''} {expense.description ?? expense.category}
+                      {CATEGORY_EMOJI[expense.category] ?? ''}{' '}
+                      {expense.description ?? expense.category}
                     </Text>
                     <Text variant="caption" tone="muted">
                       {expense.split.type} split · {expense.source}
@@ -232,7 +222,11 @@ export function MonthRoomScreen() {
     if (event.kind === 'settlement_recorded' && settlement) {
       return (
         <Stack direction="row" gap={2} align="flex-start">
-          {actor ? <Avatar member={actor} size={32} /> : <View style={{ width: 32 }} />}
+          {actor ? (
+            <Avatar member={actor} size={32} />
+          ) : (
+            <View style={{ width: 32 }} />
+          )}
           <Card padding={4} variant="muted" style={{ flex: 1 }}>
             <Stack gap={1}>
               <Text variant="caption" tone="muted" weight="700">
@@ -253,21 +247,27 @@ export function MonthRoomScreen() {
 
     if (event.kind === 'comment') {
       const body = String((event.payload as { body?: string })?.body ?? '');
-      const onExpense = event.subject_id ? expensesById.get(event.subject_id) : undefined;
+      const onExpense = event.subject_id
+        ? expensesById.get(event.subject_id)
+        : undefined;
       return (
         <Pressable onPress={() => onExpense && onPressExpense(onExpense.id)}>
           <Stack
             direction="row"
             gap={2}
             align="flex-start"
-            style={{ justifyContent: mine ? 'flex-end' : 'flex-start' }}>
+            style={{ justifyContent: mine ? 'flex-end' : 'flex-start' }}
+          >
             {!mine && actor ? <Avatar member={actor} size={28} /> : null}
             <Card
               padding={3}
               style={{
                 maxWidth: '78%',
-                backgroundColor: mine ? theme.colors.accentMuted : theme.colors.bgElevated,
-              }}>
+                backgroundColor: mine
+                  ? theme.colors.accentMuted
+                  : theme.colors.bgElevated,
+              }}
+            >
               <Stack gap={1}>
                 <Text variant="caption" tone="muted">
                   {actorName} · {time}
@@ -336,7 +336,8 @@ function Header({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-      }}>
+      }}
+    >
       <Stack direction="row" gap={2} align="center">
         <Text style={{ fontSize: 24 }}>{icon}</Text>
         <Stack gap={0}>

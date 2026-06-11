@@ -6,3 +6,4 @@ export { Screen } from './Screen';
 export { Stack } from './Stack';
 export { Input } from './Input';
 export { SegmentedControl } from './SegmentedControl';
+export { MonthSelector } from './MonthSelector';
