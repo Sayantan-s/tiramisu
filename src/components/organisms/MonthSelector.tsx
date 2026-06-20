@@ -1,33 +1,32 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  FlatList,
-  Modal,
-  Pressable,
-  View,
-  useWindowDimensions,
-} from 'react-native';
+import { FlatList, Modal, Pressable, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Stack } from './Stack';
-import { Text } from './Text';
-import { useTheme } from '../theme';
+import { useTheme } from '../../theme';
+import { Stack } from '../primitives/Stack';
+import { Text } from '../primitives/Text';
+import { Icon } from '../primitives/Icon';
 
-const MONTHS = [
-  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-];
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 const ITEM_WIDTH = 84;
 
 export type MonthSelectorProps = {
-  /** YYYY-MM */
+  /** Selected month as `YYYY-MM`. */
   value: string;
   onChange: (value: string) => void;
-  /** Years to surface in the year sheet. Current year and the active year are always included. */
+  /** Years to surface in the picker; current and active years are always included. */
   availableYears?: number[];
 };
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
+/**
+ * A horizontally snapping month strip with a bottom-sheet year picker. Drives
+ * the month-scoped views across the app.
+ *
+ * @example
+ * <MonthSelector value="2026-04" onChange={setMonth} />
+ */
 export function MonthSelector({ value, onChange, availableYears }: MonthSelectorProps) {
   const theme = useTheme();
   const { width: screenWidth } = useWindowDimensions();
@@ -47,10 +46,7 @@ export function MonthSelector({ value, onChange, availableYears }: MonthSelector
   }, [year, availableYears]);
 
   useEffect(() => {
-    listRef.current?.scrollToOffset({
-      offset: monthIndex * ITEM_WIDTH,
-      animated: !firstRender.current,
-    });
+    listRef.current?.scrollToOffset({ offset: monthIndex * ITEM_WIDTH, animated: !firstRender.current });
     firstRender.current = false;
   }, [monthIndex]);
 
@@ -58,11 +54,7 @@ export function MonthSelector({ value, onChange, availableYears }: MonthSelector
   const setYear = (y: number) => onChange(`${y}-${pad(monthIndex + 1)}`);
 
   return (
-    <View
-      style={{
-        paddingTop: theme.spacing(2),
-        paddingBottom: theme.spacing(3),
-      }}>
+    <View style={{ paddingTop: theme.spacing(2), paddingBottom: theme.spacing(3) }}>
       <Pressable
         onPress={() => setSheetOpen(true)}
         accessibilityRole="button"
@@ -77,16 +69,10 @@ export function MonthSelector({ value, onChange, availableYears }: MonthSelector
           borderRadius: theme.radii.pill,
         }}
         hitSlop={12}>
-        <Text
-          variant="caption"
-          tone="muted"
-          weight="700"
-          style={{ letterSpacing: 1.5 }}>
+        <Text variant="caption" tone="muted" weight="700" style={{ letterSpacing: 1.5 }}>
           {year}
         </Text>
-        <Text variant="caption" tone="muted">
-          ▾
-        </Text>
+        <Icon name="chevron-down" size={14} color="mutedForeground" />
       </Pressable>
 
       <FlatList
@@ -97,11 +83,7 @@ export function MonthSelector({ value, onChange, availableYears }: MonthSelector
         showsHorizontalScrollIndicator={false}
         snapToInterval={ITEM_WIDTH}
         decelerationRate="fast"
-        getItemLayout={(_, i) => ({
-          length: ITEM_WIDTH,
-          offset: ITEM_WIDTH * i,
-          index: i,
-        })}
+        getItemLayout={(_, i) => ({ length: ITEM_WIDTH, offset: ITEM_WIDTH * i, index: i })}
         contentContainerStyle={{ paddingHorizontal: sidePadding }}
         onMomentumScrollEnd={(e) => {
           const i = Math.round(e.nativeEvent.contentOffset.x / ITEM_WIDTH);
@@ -115,23 +97,15 @@ export function MonthSelector({ value, onChange, availableYears }: MonthSelector
               accessibilityRole="button"
               accessibilityLabel={`${item} ${year}`}
               accessibilityState={{ selected: active }}
-              style={{
-                width: ITEM_WIDTH,
-                height: 56,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
+              style={{ width: ITEM_WIDTH, height: 56, alignItems: 'center', justifyContent: 'center' }}>
               <View
                 style={{
                   paddingVertical: theme.spacing(1) + 2,
                   paddingHorizontal: theme.spacing(3),
                   borderRadius: theme.radii.pill,
-                  backgroundColor: active ? theme.colors.accent : 'transparent',
+                  backgroundColor: active ? theme.colors.primary : 'transparent',
                 }}>
-                <Text
-                  variant="body"
-                  weight={active ? '800' : '500'}
-                  tone={active ? 'inverse' : 'muted'}>
+                <Text variant="body" weight={active ? '800' : '500'} tone={active ? 'inverse' : 'muted'}>
                   {item}
                 </Text>
               </View>
@@ -140,11 +114,7 @@ export function MonthSelector({ value, onChange, availableYears }: MonthSelector
         }}
       />
 
-      <Modal
-        visible={sheetOpen}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setSheetOpen(false)}>
+      <Modal visible={sheetOpen} transparent animationType="slide" onRequestClose={() => setSheetOpen(false)}>
         <Pressable
           onPress={() => setSheetOpen(false)}
           accessibilityRole="button"
@@ -154,7 +124,7 @@ export function MonthSelector({ value, onChange, availableYears }: MonthSelector
         <SafeAreaView
           edges={['bottom']}
           style={{
-            backgroundColor: theme.colors.bgElevated,
+            backgroundColor: theme.colors.card,
             borderTopLeftRadius: theme.radii.xl,
             borderTopRightRadius: theme.radii.xl,
             paddingHorizontal: theme.spacing(5),
@@ -188,19 +158,13 @@ export function MonthSelector({ value, onChange, availableYears }: MonthSelector
                       paddingVertical: theme.spacing(3),
                       paddingHorizontal: theme.spacing(4),
                       borderRadius: theme.radii.md,
-                      backgroundColor: active
-                        ? theme.colors.accentMuted
-                        : theme.colors.bgMuted,
+                      backgroundColor: active ? theme.colors.secondary : theme.colors.muted,
                     }}>
                     <Stack direction="row" justify="space-between" align="center">
                       <Text variant="title" weight={active ? '800' : '500'}>
                         {y}
                       </Text>
-                      {active ? (
-                        <Text tone="accent" weight="700">
-                          ●
-                        </Text>
-                      ) : null}
+                      {active ? <Icon name="check-circle" color="primary" /> : null}
                     </Stack>
                   </Pressable>
                 );

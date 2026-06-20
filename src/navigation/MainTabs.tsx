@@ -1,7 +1,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Platform, View } from 'react-native';
 import { useTheme } from '../theme';
-import { Text } from '../components/Text';
+import { Text } from '../components';
 import { MonthRoomScreen } from '../screens/MonthRoomScreen';
 import { ScanScreen } from '../screens/ScanScreen';
 import { SettleScreen } from '../screens/SettleScreen';

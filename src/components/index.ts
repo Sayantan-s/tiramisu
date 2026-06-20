@@ -1,9 +1,13 @@
-export { Text } from './Text';
-export { Card } from './Card';
-export { Button } from './Button';
-export { Avatar } from './Avatar';
-export { Screen } from './Screen';
-export { Stack } from './Stack';
-export { Input } from './Input';
-export { SegmentedControl } from './SegmentedControl';
-export { MonthSelector } from './MonthSelector';
+/**
+ * Tiramisu design system — public component barrel.
+ *
+ * Tiers:
+ * - `primitives/` — atoms (Text, Button, Input, Avatar, …)
+ * - `molecules/`  — compound components (Card.*, FormField.*, ListItem.*, Alert.*, …)
+ * - `organisms/`  — interactive composites (BottomSheet.*, Select, Accordion.*, Tabs.*, MonthSelector)
+ *
+ * See ./README.md for usage and conventions.
+ */
+export * from './primitives';
+export * from './molecules';
+export * from './organisms';

@@ -6,6 +6,7 @@
 
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar, useColorScheme } from 'react-native';
@@ -53,11 +54,13 @@ function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <ThemeProvider>
-          <StatusBar barStyle={scheme === 'dark' ? 'light-content' : 'dark-content'} />
-          <NavigationContainer ref={navigationRef}>
-            <RootNavigator />
-          </NavigationContainer>
-          {DEV_MODE ? <DevPanel /> : null}
+          <BottomSheetModalProvider>
+            <StatusBar barStyle={scheme === 'dark' ? 'light-content' : 'dark-content'} />
+            <NavigationContainer ref={navigationRef}>
+              <RootNavigator />
+            </NavigationContainer>
+            {DEV_MODE ? <DevPanel /> : null}
+          </BottomSheetModalProvider>
         </ThemeProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
