@@ -9,7 +9,10 @@ export type DividerProps = {
 };
 
 /** A one-pixel hairline using the `border` token. */
-export function Divider({ orientation = 'horizontal', spacing = 0 }: DividerProps) {
+export function Divider({
+  orientation = 'horizontal',
+  spacing = 0,
+}: DividerProps) {
   const theme = useTheme();
   const isH = orientation === 'horizontal';
   return (
